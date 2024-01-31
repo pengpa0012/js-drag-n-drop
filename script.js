@@ -59,7 +59,10 @@ sections.forEach(el => {
         console.log("BEFORE")
         targetItem.parentNode.insertBefore(currentDrag, targetItem,);
       }
-    } else {
+    }
+
+    // DRAG TO OTHER COLUMN
+    if(el.attributes["data-column"].value !== draggable.attributes["data-column"]?.value) {
       el.appendChild(draggable)    
     }
   })  
