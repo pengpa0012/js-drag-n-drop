@@ -24,6 +24,8 @@ const allItems = [
   }
 ]
 
+let currentDrag = null
+
 sections.forEach(el => {
   // Add initial items
   allItems.forEach(item => {
@@ -39,12 +41,37 @@ sections.forEach(el => {
   })
 
   el.addEventListener('dragover', e => {
+    // prevent default to allow drop
+    e.preventDefault()
     const draggable = document.querySelector('.dragging')
-    // change column
-    el.appendChild(draggable)    
+
+    // FOR SORTING
+    const targetItem = e.target;
+    if (targetItem !== currentDrag && targetItem.classList.contains('item')) {
+      console.log("test")
+      const boundingRect = targetItem.getBoundingClientRect();
+      const offset = boundingRect.top + (targetItem.offsetHeight / 2)
+      console.log(e.clientY, offset)
+      if (e.clientY > offset) {
+        console.log("AFTER")
+        targetItem.parentNode.insertBefore(currentDrag, targetItem.nextSibling);
+      } else {
+        console.log("BEFORE")
+        targetItem.parentNode.insertBefore(currentDrag, targetItem,);
+      }
+    } else {
+      el.appendChild(draggable)    
+    }
+  })  
+
+  
+  el.addEventListener("drop", e => {
+    e.preventDefault()
+    // update task object
+    const draggable = document.querySelector('.dragging')
     const findItem = allItems.findIndex(el => el.id == draggable.attributes["data-id"].value)
     allItems[findItem].column = parseInt(el.attributes["data-column"].value)
-  })  
+  })
 })
 
 document.addEventListener('click', e => {
@@ -91,6 +118,7 @@ function itemsEvent() {
 
   items.forEach(el => {
     el.addEventListener("dragstart", e => {
+      currentDrag = e.target
       e.target.classList.add('dragging')
       e.target.classList.add("opacity-50")
     })
